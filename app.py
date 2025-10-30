@@ -21,4 +21,26 @@ with st.sidebar:
 # Parse tickers
 tickers = [t.strip().upper() for t in tickers_raw.split(",") if t.strip()]
 
+@st.cache_data(show_spinner=True, ttl=1800)
+def fetch_close_prices(tickers, start, end):
+    if not tickers:
+        return pd.DataFrame()
+    df = yf.download(tickers, start=start, end=end + timedelta(days=1), progress=False, auto_adjust=False)
+    # If multiple tickers, df has MultiIndex columns (field, ticker)
+    if isinstance(df.columns, pd.MultiIndex):
+        close = df.xs("Close", axis=1, level=0)
+    else:
+        # Single ticker: columns are fields
+        if "Close" in df.columns:
+            close = df[["Close"]].copy()
+        else:
+            # fallback if Close missing
+            fallback = "Adj Close" if "Adj Close" in df.columns else df.columns[0]
+            close = df[[fallback]].copy()
+        close.columns = [tickers[0]]
+    close.index = pd.to_datetime(close.index)
+    return close.sort_index()
+
+prices = fetch_close_prices(tickers, start_date, end_date)
+
 
