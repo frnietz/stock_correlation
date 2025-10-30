@@ -94,12 +94,12 @@ def fetch_prices(tickers, start, end, field):
     df = yf.download(tickers, start=start, end=end + timedelta(days=1), progress=False, auto_adjust=False)
     # Normalize to single-level columns of tickers
     if isinstance(df.columns, pd.MultiIndex):
-        if field in df.columns.get_level_values(0):
-            sub = df[field].copy()
+        lvl0 = df.columns.get_level_values(0)
+        if field in set(lvl0):
+            sub = df.xs(field, axis=1, level=0)
         else:
-            fallback = "Adj Close" if "Adj Close" in df.columns.get_level_values(0) else "Close"
-            sub = df[fallback].copy()
-        sub.columns = sub.columns.get_level_values(1)
+            fallback = "Adj Close" if "Adj Close" in set(lvl0) else "Close"
+            sub = df.xs(fallback, axis=1, level=0)
     else:
         # Single ticker
         if field in df.columns:
@@ -107,12 +107,18 @@ def fetch_prices(tickers, start, end, field):
         else:
             fallback = "Adj Close" if "Adj Close" in df.columns else "Close"
             sub = df[[fallback]].copy()
-        sub.columns = tickers
+        if len(tickers) >= 1:
+            sub.columns = [tickers[0]]
+    # Ensure datetime index
+    sub.index = pd.to_datetime(sub.index)
     return sub.sort_index()
 
 def resample_prices(prices_df, interval_label):
     if prices_df.empty:
         return prices_df
+    if not isinstance(prices_df.index, pd.DatetimeIndex):
+        prices_df = prices_df.copy()
+        prices_df.index = pd.to_datetime(prices_df.index)
     if interval_label.startswith("Daily"):
         return prices_df
     elif interval_label.startswith("Weekly"):
@@ -173,6 +179,7 @@ st.divider()
 # -----------------------------
 # Display
 # -----------------------------
+corr_to_download = pd.DataFrame()
 if returns_df is None:
     st.info("Select at least two tickers with available data in the chosen date range to compute a correlation matrix.")
 else:
