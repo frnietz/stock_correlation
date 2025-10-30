@@ -43,4 +43,25 @@ def fetch_close_prices(tickers, start, end):
 
 prices = fetch_close_prices(tickers, start_date, end_date)
 
+if prices.empty or len(prices.columns) < 2:
+    st.info("Enter at least two valid tickers with available data for the selected range.")
+else:
+    st.subheader("Daily Close Prices")
+    st.dataframe(prices.tail(10), use_container_width=True)
+
+    # Daily % returns and correlation
+    returns = prices.pct_change().dropna(how="all")
+    returns = returns.dropna(axis=1, how="all")
+    if returns.shape[1] < 2:
+        st.info("Not enough overlapping data to compute correlation. Try adjusting the date range or tickers.")
+    else:
+        corr = returns.corr()
+        st.subheader("Correlation Matrix (Daily % Returns)")
+        st.dataframe(corr.style.format("{:.2f}"), use_container_width=True, height=400)
+
+        fig = go.Figure(data=go.Heatmap(
+            z=corr.values, x=corr.columns, y=corr.index, zmin=-1, zmax=1, colorbar=dict(title="ρ")
+        ))
+        fig.update_layout(height=700, margin=dict(l=50,r=50,b=50,t=40))
+        st.plotly_chart(fig, use_container_width=True)
 
