@@ -64,4 +64,8 @@ else:
         ))
         fig.update_layout(height=700, margin=dict(l=50,r=50,b=50,t=40))
         st.plotly_chart(fig, use_container_width=True)
-
+        # Downloads
+        st.download_button("⬇️ Download correlation CSV", data=corr.to_csv().encode("utf-8"),
+                           file_name="correlation_matrix.csv", mime="text/csv")
+        st.download_button("⬇️ Download prices CSV", data=prices.to_csv().encode("utf-8"),
+                           file_name="daily_close_prices.csv", mime="text/csv")
