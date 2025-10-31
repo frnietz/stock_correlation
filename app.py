@@ -42,6 +42,15 @@ with st.sidebar:
 
 # Parse tickers
 tickers = [t.strip().upper() for t in tickers_raw.split(",") if t.strip()]
+# Resolve final ticker list
+if use_basket and basket_ticks:
+    if append_basket:
+        tickers = sorted(set(manual).union(basket_ticks))
+    else:
+        tickers = list(dict.fromkeys(basket_ticks))  # preserve order & de-dupe
+else:
+    tickers = manual
+
 
 @st.cache_data(show_spinner=True, ttl=1800)
 def fetch_close_prices(tickers, start, end):
