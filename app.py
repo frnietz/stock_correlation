@@ -31,6 +31,15 @@ with st.sidebar:
     start_date = st.date_input("Start date", value=one_year_ago, max_value=today - timedelta(days=1))
     end_date = st.date_input("End date", value=today, min_value=start_date + timedelta(days=1))
 
+
+# Basket selection
+    st.subheader("🎒 Predefined basket")
+    basket_name = st.selectbox("Choose a basket", options=list(PREDEFINED.keys()), index=0)
+    basket_ticks = PREDEFINED.get(basket_name, [])
+    st.write("Basket tickers:", ", ".join(basket_ticks) if basket_ticks else "—")
+    use_basket = st.checkbox("Use basket tickers", value=False, help="If checked, the basket tickers are used (you can also append them).")
+    append_basket = st.checkbox("Append basket to manual selection", value=True, help="If unchecked while 'Use basket' is checked, only the basket tickers are used.")
+
 # Parse tickers
 tickers = [t.strip().upper() for t in tickers_raw.split(",") if t.strip()]
 
