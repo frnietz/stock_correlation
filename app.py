@@ -69,7 +69,7 @@ else:
             y=y,
             zmin=-1,
             zmax=1,
-            colorscale="plotly3",          # vivid contrasting colors
+            colorscale="rdylbu",          # vivid contrasting colors
             colorbar=dict(title="ρ"),
             hovertemplate='%{x} vs %{y}: <b>%{z:.2f}</b><extra></extra>',
         ))
