@@ -59,11 +59,39 @@ else:
         st.subheader("Correlation Matrix (Daily % Returns)")
         st.dataframe(corr.style.format("{:.2f}"), use_container_width=True, height=400)
 
-        fig = go.Figure(data=go.Heatmap(
-            z=corr.values, x=corr.columns, y=corr.index, zmin=-1, zmax=1, colorbar=dict(title="ρ")
-        ))
-        fig.update_layout(height=700, margin=dict(l=50,r=50,b=50,t=40))
-        st.plotly_chart(fig, use_container_width=True)
+z = corr.values
+x = corr.columns
+y = corr.index
+
+fig = go.Figure(data=go.Heatmap(
+    z=z,
+    x=x,
+    y=y,
+    zmin=-1,
+    zmax=1,
+    colorscale="RdBu",          # vivid contrasting colors
+    colorbar=dict(title="ρ"),
+    hovertemplate='%{x} vs %{y}: <b>%{z:.2f}</b><extra></extra>',
+))
+
+# Add text annotations (correlation values)
+for i in range(len(y)):
+    for j in range(len(x)):
+        fig.add_annotation(
+            x=x[j],
+            y=y[i],
+            text=f"{z[i][j]:.2f}",
+            showarrow=False,
+            font=dict(color="black", size=12, family="Arial") if abs(z[i][j]) < 0.7 else 
+                 dict(color="white", size=12, family="Arial")  # high contrast
+        )
+
+fig.update_layout(
+    height=700,
+    margin=dict(l=50,r=50,b=50,t=40),
+)
+
+st.plotly_chart(fig, use_container_width=True)
         # Downloads
         st.download_button("⬇️ Download correlation CSV", data=corr.to_csv().encode("utf-8"),
                            file_name="correlation_matrix.csv", mime="text/csv")
