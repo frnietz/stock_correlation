@@ -69,7 +69,7 @@ else:
             y=y,
             zmin=-1,
             zmax=1,
-            colorscale="RdBu",          # vivid contrasting colors
+            colorscale="Viridis",          # vivid contrasting colors
             colorbar=dict(title="ρ"),
             hovertemplate='%{x} vs %{y}: <b>%{z:.2f}</b><extra></extra>',
         ))
