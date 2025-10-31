@@ -10,6 +10,19 @@ st.set_page_config(page_title="Simple Stock Correlation", layout="wide")
 st.title("📈 Simple Stock Correlation (Daily Close)")
 st.caption("Enter tickers and a date range. We fetch **daily Close** prices, compute daily % returns, and display the correlation matrix.")
 
+PREDEFINED = {
+    "None": [],
+    "Tech Megacaps (US)": ["AAPL","MSFT","GOOGL","AMZN","META","NVDA","TSLA","ORCL","INTC","CSCO","ADBE"],
+    "Airlines (US + Intl)": ["AAL","DAL","UAL","LUV","ALK","JBLU","RYAAY","BA","EADSY"],
+    "US Money Center Banks": ["JPM","BAC","WFC","C","GS","MS","USB","PNC"],
+    "Consumer Staples (US)": ["KO","PEP","PG","WMT","COST","MDLZ","KHC"],
+    "Semiconductors": ["NVDA","AMD","AVGO","TSM","QCOM","INTC","MU","TXN"],
+    "S&P Sectors (SPDR ETFs)": ["XLB","XLE","XLF","XLI","XLK","XLP","XLU","XLV","XLY","XLRE","XLC"],
+    "Energy Majors": ["XOM","CVX","SHEL","BP","TTE"],
+    "Media & Streaming": ["NFLX","DIS","PARA","WBD","ROKU","SPOT"],
+}
+
+
 with st.sidebar:
     st.header("Inputs")
     tickers_raw = st.text_input("Tickers (comma-separated)", value="AAPL,MSFT,GOOGL,AMZN,NVDA")
